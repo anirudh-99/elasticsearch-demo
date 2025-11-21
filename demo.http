@@ -1,0 +1,63 @@
+@hostname = http://localhost:9200
+
+GET {{hostname}}/_search
+
+{
+  "query": {
+      "bool" : {
+        "must": 
+          [
+            {
+              "multi_match": {
+                "query": "andromeda",
+                  "fields": ["title", "explanation"]
+              }
+            }
+          ],
+          "filter": [
+              {
+                "range": {
+                  "date": {
+                      "gte": "2024-01-01",
+                      "lte": "2024-12-31"
+                  }
+                }
+              }
+          ]
+        }
+  },
+  "from": 2,
+  "size": 2
+}
+
+###
+
+GET {{hostname}}/_search
+
+{
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "multi_match": {
+            "query": "andromeda",
+            "fields": ["title", "explanation"]
+          }
+        }
+      ]
+    }
+  },
+  "aggs": {
+    "docs_per_year": {
+      "date_histogram": {
+        "field": "date",
+        "calendar_interval": "year",
+        "format": "yyyy"
+      }
+    }
+  }
+}
+
+###
+
+
